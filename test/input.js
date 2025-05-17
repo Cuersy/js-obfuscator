@@ -1,11 +1,6 @@
-function babani(a){
-    if ((a % 2) == 0) {
-        console.log("A esittir 2'nin kati ");
-    }else {
-        console.log("A'nin ..");
-    }
+console.log("ananis iskeyim bugra");
+function baba(x) {
+    return "sg bugra";
 }
 
-for (let i = 0 ; i < 5; i++){
-babani(i)
-}
+console.log(baba(13) + baba(11111));

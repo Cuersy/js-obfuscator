@@ -1,12 +1,18 @@
 #include "obfuscator.h"
 #include <sstream>
-#include<iostream>
+#include <iostream>
 #include <iomanip>
 
 Obfuscator::Obfuscator() : nameCounter(0), stringCounter(0) {
     reservedNames = {"console", "log"};
 }
-
+std::string obfstr(const std::string& input) {
+    std::ostringstream oss;
+    for (char ch : input) {
+        oss << '\\' << std::oct << std::setw(3) << std::setfill('0') << static_cast<int>(ch);
+    }
+    return oss.str();
+}
 std::string Obfuscator::generateNewName() {
     std::stringstream ss;
     ss << "_0x" << std::hex << std::setw(6) << std::setfill('0') << (nameCounter++ * 0x1234 % 0xFFFFFF);
@@ -24,11 +30,15 @@ std::string Obfuscator::getObfuscatedName(const std::string& original) {
 }
 
 std::string Obfuscator::getStringIndex(const std::string& str) {
-    if (stringTable.find(str) == stringTable.end()) {
-        stringTable[str] = stringCounter++;
-        stringList.push_back(str);
+    std::string cleanStr = str;
+    if (cleanStr.size() >= 2 && cleanStr.front() == '"' && cleanStr.back() == '"') {
+        cleanStr = cleanStr.substr(1, cleanStr.size() - 2);
     }
-    return "0x" + std::to_string(stringTable[str]);
+    if (stringTable.find(cleanStr) == stringTable.end()) {
+        stringTable[cleanStr] = stringCounter++;
+        stringList.push_back(cleanStr);
+    }
+    return "0x" + std::to_string(stringTable[cleanStr]);
 }
 
 std::string Obfuscator::obfuscateNumber(const std::string& num) {
@@ -47,6 +57,9 @@ void Obfuscator::obfuscateNode(std::shared_ptr<ASTNode> node) {
         node->value = getObfuscatedName(node->value);
     } else if (node->type == ASTNodeType::NUMBER) {
         node->value = obfuscateNumber(node->value);
+    } else if (node->type == ASTNodeType::STRING) {
+        node->value = getStringIndex(node->value);
+        node->type = ASTNodeType::STRING;
     }
     for (auto& child : node->children) {
         obfuscateNode(child);
@@ -64,7 +77,13 @@ std::string Obfuscator::generateStringTable(std::string& funcName) {
     ss << "var " << tableName << "=['";
     for (size_t i = 0; i < stringList.size(); ++i) {
         if (i > 0) ss << "','";
-        ss << stringList[i];
+        for (char c : stringList[i]) {
+            if (c == '\'') ss << "\\'";
+            else if (c == '\\') ss << "\\\\";
+            else if (c == '\n') ss << "\\n";
+            else if (c == '\t') ss << "\\t";
+            else ss << "\\x" << std::hex << std::setw(2) << std::setfill('0') << (static_cast<int>(c) & 0xFF);
+        }
     }
     ss << "'];";
     ss << "var " << funcName << "=function(_0x1){return " << tableName << "[_0x1];};";
@@ -122,7 +141,11 @@ std::string Obfuscator::generateCode(std::shared_ptr<ASTNode> node, int indent) 
             ss << indentStr;
             if (node->children[0]->type == ASTNodeType::MEMBER_EXPRESSION) {
                 auto member = node->children[0];
-                if (!stringFunc.empty()) {
+                std::string objName = member->children[0]->value;
+                std::string propName = member->children[1]->value;
+                if (reservedNames.count(objName) && reservedNames.count(propName)) {
+                    ss << objName << "." << propName;
+                } else if (!stringFunc.empty()) {
                     ss << generateCode(member->children[0], 0) << "[" << stringFunc << "(";
                     ss << getStringIndex(member->children[1]->value) << ")]";
                 } else {
@@ -151,7 +174,11 @@ std::string Obfuscator::generateCode(std::shared_ptr<ASTNode> node, int indent) 
             break;
         }
         case ASTNodeType::MEMBER_EXPRESSION: {
-            if (!stringFunc.empty()) {
+            std::string objName = node->children[0]->value;
+            std::string propName = node->children[1]->value;
+            if (reservedNames.count(objName) && reservedNames.count(propName)) {
+                ss << objName << "." << propName;
+            } else if (!stringFunc.empty()) {
                 ss << generateCode(node->children[0], 0) << "[" << stringFunc << "(";
                 ss << getStringIndex(node->children[1]->value) << ")]";
             } else {
@@ -159,15 +186,23 @@ std::string Obfuscator::generateCode(std::shared_ptr<ASTNode> node, int indent) 
             }
             break;
         }
-        case ASTNodeType::EXPRESSION: {
-            ss << "(" << generateCode(node->children[0], 0) << node->value 
+        case ASTNodeType::EXPRESSION:
+        case ASTNodeType::BINARY_EXPRESSION: {
+            ss << "(" << generateCode(node->children[0], 0) << " " << node->value << " " 
                << generateCode(node->children[1], 0) << ")";
             break;
         }
         case ASTNodeType::IDENTIFIER:
         case ASTNodeType::NUMBER: {
-            std::cout << std::endl <<node->value << "added..." << std::endl;
             ss << node->value;
+            break;
+        }
+        case ASTNodeType::STRING: {
+            if (!stringFunc.empty()) {
+                ss << stringFunc << "(" << node->value << ")";
+            } else {
+                ss << "'" << stringList[std::stoi(node->value.substr(2))] << "'";
+            }
             break;
         }
         default:

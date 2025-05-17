@@ -488,3 +488,29 @@ std::shared_ptr<ASTNode> Parser::parsePrimary() {
     advance();
     return nullptr;
 }
+std::shared_ptr<ASTNode> Parser::parseString() {
+    if (isAtEnd() || peek().type != TokenType::STRING) {
+        return nullptr;
+    }
+    
+    auto node = std::make_shared<ASTNode>(ASTNodeType::STRING, peek().value);
+    advance();
+    
+    while (!isAtEnd() && peek().value == "+") {
+        advance();
+        if (isAtEnd() || peek().type != TokenType::STRING) {
+            std::cerr << "Error: Expected string after '+' for concatenation\n";
+            return node;
+        }
+        
+        auto right = std::make_shared<ASTNode>(ASTNodeType::STRING, peek().value);
+        advance();
+        
+        auto concatNode = std::make_shared<ASTNode>(ASTNodeType::BINARY_EXPRESSION, "+");
+        concatNode->children.push_back(node);
+        concatNode->children.push_back(right);
+        node = concatNode;
+    }
+    
+    return node;
+}

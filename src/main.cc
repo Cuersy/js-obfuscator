@@ -17,11 +17,12 @@ void printAST(const std::shared_ptr<ASTNode>& node, int indent = 0) {
         case ASTNodeType::WHILE_STATEMENT: std::cout << "WhileStatement"; break;
         case ASTNodeType::VARIABLE_DECLARATION: std::cout << "VariableDeclaration"; break;
         case ASTNodeType::FUNCTION_DECLARATION: std::cout << "FunctionDeclaration"; break;
+        case ASTNodeType::STRING: std::cout << "String"; break;
         case ASTNodeType::FUNCTION_CALL: std::cout << "FuncCall"; break;
         case ASTNodeType::RETURN_STATEMENT: std::cout << "ReturnStatement"; break;
         case ASTNodeType::EXPRESSION: std::cout << "Expression"; break;
         case ASTNodeType::NUMBER: std::cout << "Number"; break;
-        case ASTNodeType::STRING: std::cout << "String"; break;
+        case ASTNodeType::BINARY_EXPRESSION: std::cout << "BINARY EXPRESSION"; break;
         case ASTNodeType::IDENTIFIER: std::cout << "Identifier"; break;
         case ASTNodeType::MEMBER_EXPRESSION: std::cout << "MemberExpression"; break;
         default: std::cout << "Unknown"; break;

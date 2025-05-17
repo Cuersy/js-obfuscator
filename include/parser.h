@@ -22,7 +22,8 @@ enum class ASTNodeType {
     IF_STATEMENT,
     WHILE_STATEMENT,
     FOR_LOOP,
-    WHILE_LOOP
+    WHILE_LOOP,
+    BINARY_EXPRESSION
 };
 
 struct ASTNode {
@@ -63,6 +64,7 @@ private:
     std::shared_ptr<ASTNode> parsePrimary();
     std::shared_ptr<ASTNode> parseForLoop();
     std::shared_ptr<ASTNode> parseWhileLoop();
+    std::shared_ptr<ASTNode> parseString();
 };
 
 #endif
