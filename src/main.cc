@@ -51,7 +51,7 @@ int main(int argc, char* argv[]) {
     auto ast = parser.parseProgram();
     Obfuscator obfuscator;
     obfuscator.obfuscate(ast);
-    std::cout << "=== Obfuscated AST ===" << std::endl;
+    std::cout << "=== Obfuscated AST === \\\\||" << std::endl;
     printAST(ast);
     std::string obfuscatedCode = obfuscator.generateObfuscatedCode(ast);
     std::ofstream outFile("../test/output.js");
