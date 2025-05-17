@@ -1,0 +1,7 @@
+(async () => {
+  function _0x000000(_0x001234) {
+20    console.log();
+  }
+  console.log();
+_0x002468  _0x000000(_0x002468);
+})(0x1,(0xB-0x2));
