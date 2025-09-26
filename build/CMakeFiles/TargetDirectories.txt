@@ -1,3 +1,0 @@
-/home/cuersy/Desktop/js obfuscator/build/CMakeFiles/cursiobfuscator.dir
-/home/cuersy/Desktop/js obfuscator/build/CMakeFiles/edit_cache.dir
-/home/cuersy/Desktop/js obfuscator/build/CMakeFiles/rebuild_cache.dir

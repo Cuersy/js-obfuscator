@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/cursiobfuscator.dir/src/main.cc.o CMakeFiles/cursiobfuscator.dir/src/parser.cc.o CMakeFiles/cursiobfuscator.dir/src/lexer.cc.o CMakeFiles/cursiobfuscator.dir/src/obfuscator.cc.o -o cursiobfuscator 
