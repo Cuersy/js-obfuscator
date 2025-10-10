@@ -1,3 +1,9 @@
+/*
+ * @Author: Cuersy 
+ * @Date: 2025-10-10 18:12:16 
+ * @Last Modified by:   Cuersy 
+ * @Last Modified time: 2025-10-10 18:12:16 
+ */
 #include "obfuscator.h"
 #include <sstream>
 #include <iostream>

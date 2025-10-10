@@ -1,3 +1,9 @@
+/*
+ * @Author: Cuersy 
+ * @Date: 2025-10-10 18:12:26 
+ * @Last Modified by:   Cuersy 
+ * @Last Modified time: 2025-10-10 18:12:26 
+ */
 #ifndef OBFUSCATOR_H
 #define OBFUSCATOR_H
 
