@@ -10,9 +10,26 @@ set(SOURCES
     src/lexer.cc
     src/obfuscator.cc
 )
-
 add_executable(cursiobfuscator ${SOURCES})
+if (MSVC)
+    message(STATUS "Bulding with MSVC detected. Configuring for Windows...")
+    target_compile_options(cursiobfuscator PRIVATE
+        "$<$<CONFIG:Debug>:/W4;/RTC1>"
+        "$<$<CONFIG:Release>:/W4;/O2>"
+    )
+    target_compile_definitions(cursiobfuscator PRIVATE
+        _UNICODE
+        UNICODE
+    )
 
-if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|MSVC")
-    target_compile_options(cursiobfuscator PRIVATE -Wall -Wextra -O2)
+else()
+    message(STATUS "GCC/Clang detected. Configuring for Unix-like OS...")
+
+    target_compile_options(cursiobfuscator PRIVATE
+        "$<$<CONFIG:Debug>:-g;-Wall;-Wextra>"
+        "$<$<CONFIG:Release>:-O2;-Wall;-Wextra>"
+    )
 endif()
+set_target_properties(cursiobfuscator PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+)
