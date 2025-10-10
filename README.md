@@ -142,4 +142,3 @@ Open issues and pull requests on the repository. Include a short description, re
 
 ---
 
-If you'd like, I can also add a `CONTRIBUTING.md` and a small PowerShell script to build and run the sample test automatically. Which would you prefer next?
